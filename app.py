@@ -71,6 +71,9 @@ def main():
     from_unit = st.selectbox("From Unit:", unit_categories[category])
     to_unit = st.selectbox("To Unit:", unit_categories[category])
     
+    # Initialize result to avoid UnboundLocalError
+    result = None
+    
     # Convert Button
     if st.button("Convert 🔄"):
         result = convert_units(value, from_unit, to_unit, category)
@@ -84,7 +87,7 @@ def main():
         for record in st.session_state.history[-5:]:  # Show last 5 conversions
             st.write(record)
     
-    if value and from_unit and to_unit:
+    if result is not None:
         st.session_state.history.append(f"{value} {from_unit} → {to_unit} = {result:.4f}")
 
 if __name__ == "__main__":

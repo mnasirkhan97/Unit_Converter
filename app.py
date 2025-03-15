@@ -1,18 +1,37 @@
 import streamlit as st
-from googletrans import Translator
 
-def google_unit_converter(value, from_unit, to_unit):
-    translator = Translator()
-    query = f"{value} {from_unit} to {to_unit}"
-    translated = translator.translate(query, src='en', dest='en')
-    return translated.text
+def convert_units(value, from_unit, to_unit, category):
+    conversion_factors = {
+        "Length": {"meters": 1, "feet": 3.28084, "inches": 39.3701, "kilometers": 0.001, "miles": 0.000621371},
+        "Weight": {"kilograms": 1, "pounds": 2.20462, "grams": 1000, "ounces": 35.274},
+        "Temperature": {"celsius": 1, "fahrenheit": 1.8, "kelvin": 1},
+        "Volume": {"liters": 1, "milliliters": 1000, "gallons": 0.264172, "cups": 4.22675}
+    }
+    
+    if category == "Temperature":
+        if from_unit == "celsius" and to_unit == "fahrenheit":
+            return (value * 9/5) + 32
+        elif from_unit == "fahrenheit" and to_unit == "celsius":
+            return (value - 32) * 5/9
+        elif from_unit == "celsius" and to_unit == "kelvin":
+            return value + 273.15
+        elif from_unit == "kelvin" and to_unit == "celsius":
+            return value - 273.15
+        elif from_unit == "fahrenheit" and to_unit == "kelvin":
+            return (value - 32) * 5/9 + 273.15
+        elif from_unit == "kelvin" and to_unit == "fahrenheit":
+            return (value - 273.15) * 9/5 + 32
+        else:
+            return value
+    
+    return value * conversion_factors[category][to_unit] / conversion_factors[category][from_unit]
 
 def main():
     st.set_page_config(page_title="Unit Converter", page_icon="🔄", layout="centered")
     st.title("🔄 Unit Converter")
-    st.write("Convert units using Google's translation API.")
+    st.write("Convert units instantly and accurately.")
     
-    # Theme Toggle
+    # Dark Mode Toggle
     dark_mode = st.toggle("🌙 Dark Mode")
     if dark_mode:
         st.markdown("""<style>body { background-color: #121212; color: white; }</style>""", unsafe_allow_html=True)
@@ -37,11 +56,8 @@ def main():
     
     # Convert Button
     if st.button("Convert 🔄"):
-        if value and from_unit and to_unit:
-            result = google_unit_converter(value, from_unit, to_unit)
-            st.success(f"Converted: {result}")
-        else:
-            st.warning("Please enter all values correctly.")
+        result = convert_units(value, from_unit, to_unit, category)
+        st.success(f"Converted: {value} {from_unit} = {result:.4f} {to_unit}")
     
     # Conversion History
     if "history" not in st.session_state:
@@ -52,7 +68,8 @@ def main():
             st.write(record)
     
     if value and from_unit and to_unit:
-        st.session_state.history.append(f"{value} {from_unit} → {to_unit}")
+        st.session_state.history.append(f"{value} {from_unit} → {to_unit} = {result:.4f}")
 
 if __name__ == "__main__":
     main()
+

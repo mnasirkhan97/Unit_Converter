@@ -33,8 +33,25 @@ def main():
     
     # Dark Mode Toggle
     dark_mode = st.toggle("🌙 Dark Mode")
+    
     if dark_mode:
-        st.markdown("""<style>body { background-color: #121212; color: white; }</style>""", unsafe_allow_html=True)
+        dark_css = """
+        <style>
+            body, .stApp {
+                background-color: #121212 !important;
+                color: white !important;
+            }
+            .stButton>button {
+                background-color: #333333;
+                color: white;
+            }
+            .stSelectbox, .stTextInput, .stNumberInput, .stMarkdown {
+                background-color: #333333 !important;
+                color: white !important;
+            }
+        </style>
+        """
+        st.markdown(dark_css, unsafe_allow_html=True)
     
     # Unit Categories
     unit_categories = {
@@ -72,4 +89,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
